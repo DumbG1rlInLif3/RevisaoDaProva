@@ -2,34 +2,95 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import { use } from 'react'
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  const [destino, setDestino] = useState("");
+  const [data, setData] = useState("");
+  const [gasto, setGasto] = useState("");
+  const [km, setKm] = useState("");
+  const [reembolso, setReembolso] = useState("");
+  const [viagens, setViagens] = useState([]);
+
+  //se algum campo estiver vazio, a viagem não é add. Usa-se o ! para verificação
+  const addViagem = () => {
+    if (!destino || !data || !gasto || !km || !reembolso) return;
+  }
+
+  const saldo = float(reembolso) - float(gasto);
+
+//bloco para guardar todas as informações de uma viagem antes de add na lista
+  const novaViagem = {
+    id: Date.now(),
+    destino,
+    data,
+    gasto: float(gasto),
+    km: float(km),
+    reembolso: float(reembolso),
+    saldo,
+  };
+
+  serViagens([...viagens, novaViagem]);
+
+  //limpa os campos
+  setDestino("");
+  setData("");
+  setGasto("");
+  setKm("");
+  setReembolso("");
+
+  //excluir viagem
+  const excluirViagem = (id) => {
+    setViagens(viagens.filter((v) => v.id !== id));
+  };
+
+  //cálculos gerais
+
+  let totalGasto = 0;
+  let totalKm = 0;
+  let totalReembolso = 0;
+
+  for (const v of viagens) {
+    totalGasto += v.gasto;
+    totalKm += v.km;
+    totalReembolso += v.reembolso;
+
+  }
+
+  const saldoFinal = totalReembolso - totalGasto;
+  const mediKm = viagens.lenght ? totalKm / viagens.lenght : 0;
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="container">
+      <h1>Controle de Viagens ✅</h1>
+
+      <div className="form">
+        <div className="linha">
+        <input
+          type="text"
+          placeholder="Digite aqui"
+          value={destino}
+          onChange={(e) => setDestino(e.target.value)}
+        />
+
+        <button>Adicionar</button>
+        </div>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+
+      <ul>
+
+        <li>
+          Tarefa
+          <div>
+            <button className="complete-btn" >✔</button>
+            <button className="delete-btn" >❌</button>
+          </div>
+        </li>
+
+      </ul>
+    </div>
+  );
 }
 
 export default App
